@@ -1,0 +1,111 @@
+#include <http/http_handler.h>
+
+#include <string.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
+#include <io/sound.h>
+#include <memory/alloc.h>
+#include <net/http.h>
+#include <util/log.h>
+#include <util/queues.h>
+
+static const char *TAG = "http_handler";
+
+static char *buf = NULL;
+static int contentSize = 0;
+static int writtenBytes = 0;
+static int lastResponse = 0;
+
+static char url[256] = {};
+static char requestType[16] = {};
+static int requestValues[2];
+
+static void parseURL()
+{
+	// Get URL that contains the client request
+	esp_http_client_get_url(httpClient, url, 256);
+
+	// Get rid of the http://host:port part of the url as we only want the request body
+	char *tmp = url + strlen(CONFIG_HTTP_SERVER_URL) + 1;
+	// Get the key/type of the request
+	char *req = strtok(tmp, "=");
+	strcpy(requestType, req);
+	// Get the values of the request. Optionally there can be a second value.
+	char *val1 = strtok(NULL, ",");
+	requestValues[0] = atoi(val1);
+	char *val2 = strtok(NULL, ",");
+	if (val2) requestValues[1] = atoi(val2);
+}
+
+esp_err_t httpEventHandler(esp_http_client_event_t *event)
+{
+	switch(event->event_id)
+	{
+		case HTTP_EVENT_ON_HEADER:
+		{
+			LOG_INFO("HTTP header received: %s = %s", event->header_key, event->header_value);
+
+			// Must receive Content-Length header in order to know how much data to read
+			if (!strcmp(event->header_key, "Content-Length"))
+			{
+				contentSize = atoi(event->header_value);
+				// In case the input data is parsed as a string, 
+				// allocate an extra byte to be able to then NUL-terminate it
+				buf = heap_caps_malloc_cast<char>(MALLOC_CAP_PREFERRED, contentSize+1);
+
+				// Parse the URL to tell what request to honor
+				parseURL();
+			}
+			break;
+		}
+
+		case HTTP_EVENT_ON_DATA:
+		{
+			// Keep reading data as long as it is available
+			lastResponse = esp_http_client_get_status_code(httpClient);
+			if (lastResponse == 200 && contentSize > 0 && !esp_http_client_is_chunked_response(event->client))
+			{
+				memcpy(&buf[writtenBytes], event->data, event->data_len);
+				writtenBytes += event->data_len;
+			}
+			break;
+		}
+
+		case HTTP_EVENT_ON_FINISH:
+		{
+			writtenBytes = 0;
+			// NUL-terminate the buffer
+			buf[contentSize] = '\0';
+
+			if (!strcmp(requestType, "radio"))
+			{
+				// Get the first station name from the reply
+				char *stationName = strtok(buf, ";");
+				// Keep reading station names until the buffer is empty
+				for(int i = requestValues[0]; i <= requestValues[1]; i++)
+				{
+					if (!stationName) break;
+					// Send the radio station name to the radio menu
+					sendQueueData(radioQueueTx, RADIO_QUEUE_RX_RADIO_STATION, stationName, portMAX_DELAY);
+					// Get the next radio station name
+					stationName = strtok(NULL, ";");
+				}
+				// Signal the radio menu that no more radio stations are being sent
+				sendQueueData(radioQueueTx, RADIO_QUEUE_RX_FINISHED_OP, NULL, portMAX_DELAY);
+			}
+			// Get URL of the selected radio station from the server
+			else if (!strcmp(requestType, "station"))
+			{
+				char *audioURL = heap_caps_malloc_cast<char>(MALLOC_CAP_PREFERRED, 256);
+				strlcpy(audioURL, buf, 256);
+				// Send the URL to the audio stream task to play
+				xTaskCreatePinnedToCore(audioDispatchTask, "audioTask", 3072, audioURL, tskIDLE_PRIORITY, NULL, 1);
+			}
+			break;
+		}
+
+		default: break;
+	}
+	return ESP_OK;
+}
