@@ -78,14 +78,14 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 			// NUL-terminate the buffer
 			buf[contentSize] = '\0';
 
+			// Get list of radio stations
 			if (!strcmp(requestType, "radio"))
 			{
 				// Get the first station name from the reply
 				char *stationName = strtok(buf, ";");
 				// Keep reading station names until the buffer is empty
-				for(int i = requestValues[0]; i <= requestValues[1]; i++)
+				while(stationName)
 				{
-					if (!stationName) break;
 					// Send the radio station name to the radio menu
 					sendQueueData(radioQueueTx, RADIO_QUEUE_RX_RADIO_STATION, stationName, portMAX_DELAY);
 					// Get the next radio station name
@@ -94,6 +94,7 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 				// Signal the radio menu that no more radio stations are being sent
 				sendQueueData(radioQueueTx, RADIO_QUEUE_RX_FINISHED_OP, NULL, portMAX_DELAY);
 			}
+
 			// Get URL of the selected radio station from the server
 			else if (!strcmp(requestType, "station"))
 			{
@@ -102,6 +103,48 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 				// Send the URL to the audio stream task to play
 				xTaskCreatePinnedToCore(audioDispatchTask, "audioTask", 3072, audioURL, tskIDLE_PRIORITY, NULL, 1);
 			}
+
+			// Get list of user apps
+			else if (!strcmp(requestType, "appList"))
+			{
+				// Get the first app name from the reply
+				char *appName = strtok(buf, ";");
+				// Keep reading app names until the buffer is empty
+				while(appName)
+				{
+					// Send the app name to the app menu
+					sendQueueData(appQueueTx, APP_QUEUE_RX_APP_NAME, appName, portMAX_DELAY);
+					// Get the next app name
+					appName = strtok(NULL, ";");
+				}
+				// Signal the app menu that no more apps are being sent
+				sendQueueData(appQueueTx, APP_QUEUE_RX_FINISHED_OP, NULL, portMAX_DELAY);
+			}
+
+			else if (!strcmp(requestType, "news"))
+			{
+				char *headline;
+				// Get the title of the RSS feed from the reply if requesting the first page from it
+				if (requestValues[1] == 0)
+				{
+					char *title = strtok(buf, ";");
+					sendQueueData(newsQueueTx, NEWS_QUEUE_RX_RSS_FEED_NAME, title, portMAX_DELAY);
+					headline = strtok(NULL, ";");
+				}
+				else headline = strtok(buf, ";");
+
+				while(headline)
+				{
+					// Send the headline to the news menu
+					sendQueueData(newsQueueTx, NEWS_QUEUE_RX_HEADLINE_NAME, headline, portMAX_DELAY);
+					// Get the next headline
+					headline = strtok(NULL, ";");
+				}
+
+				// Signal the news menu that no more headlines are being sent
+				sendQueueData(newsQueueTx, NEWS_QUEUE_RX_FINISHED_OP, NULL, portMAX_DELAY);
+			}
+
 			break;
 		}
 

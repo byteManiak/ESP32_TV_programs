@@ -73,6 +73,8 @@ void WifiMenu::receiveQueueData()
                     state = WIFI_MENU_STATE_CONNECTED;
 
                     sendQueueData(radioQueueTx, RADIO_QUEUE_RX_WIFI_CONNECTED, NULL);
+                    sendQueueData(appQueueTx, APP_QUEUE_RX_WIFI_CONNECTED, NULL);
+                    sendQueueData(newsQueueTx, NEWS_QUEUE_RX_WIFI_CONNECTED, NULL);
                     break;
                 }
 
