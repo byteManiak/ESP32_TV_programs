@@ -36,7 +36,7 @@ void RadioMenu::receiveQueueData()
 					connectionStatus->setText("WiFi connected");
 					connectionStatus->setFillColor(8);
 
-					state = RADIO_MENU_STATE_CONNECTED;
+					state = RADIO_MENU_STATE_REQUEST_LIST;
 					break;
 				}
 
@@ -84,16 +84,6 @@ void RadioMenu::updateSubmenu()
 			break;
 		}
 
-		// This state will run only once after the device is connected to a WiFi network
-		case RADIO_MENU_STATE_CONNECTED:
-		{
-			// Request the first 16 radio stations
-			esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_RADIO_LIST,
-											HTTP_SERVER_ADDRESS "/radio=0,15");
-			if (error == ESP_OK) state = RADIO_MENU_STATE_DISPLAY_LIST;
-			break;
-		}
-
 		case RADIO_MENU_STATE_DISPLAY_LIST:
 		{
 			setFocusedWidget(RADIO_LIST);
@@ -117,10 +107,9 @@ void RadioMenu::updateSubmenu()
 			else if (listElementIndex > -1 && radioStationList->getSize() > 0)
 			{
 				// Send out get request with the station id
-				char *url = heap_caps_malloc_cast<char>(MALLOC_CAP_PREFERRED, 256);
-				snprintf(url, 256, HTTP_SERVER_ADDRESS "/station=%d", radioPageNum*16+listElementIndex-1);
+				MAKE_REQUEST_URL("station=%d", radioPageNum*16+listElementIndex);
 
-				esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_RADIO_STATION, url);
+				esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_RADIO_STATION, GET_REQUEST_URL());
 				if (error == ESP_OK)
 				{
 					char currentStation[64] = "On air: ";
@@ -134,10 +123,9 @@ void RadioMenu::updateSubmenu()
 		// Send out a request to the HTTP client to fetch a page from the list of radio stations
 		case RADIO_MENU_STATE_REQUEST_LIST:
 		{
-			char *url = heap_caps_malloc_cast<char>(MALLOC_CAP_PREFERRED, 256);
-			snprintf(url, 256, HTTP_SERVER_ADDRESS "/radio=%d,%d", radioPageNum*16, radioPageNum*16+15);
+			MAKE_REQUEST_URL("radio=%d,%d", radioPageNum*16, radioPageNum*16+15);
 
-			esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_RADIO_LIST, url);
+			esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_RADIO_LIST, GET_REQUEST_URL());
 			if (error == ESP_OK)
 			{
 				state = RADIO_MENU_STATE_LIST_UPDATING;
