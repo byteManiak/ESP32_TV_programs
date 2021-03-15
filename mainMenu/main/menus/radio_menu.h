@@ -17,10 +17,10 @@ private:
 
 	enum radioMenuState
 	{
-		RADIO_MENU_STATE_WAITING_WIFI,
-		RADIO_MENU_STATE_REQUEST_LIST,
-		RADIO_MENU_STATE_DISPLAY_LIST,
-		RADIO_MENU_STATE_LIST_UPDATING
+		RADIO_MENU_STATE_WAITING_WIFI, // Waiting for Wifi to connect
+		RADIO_MENU_STATE_REQUEST_LIST, // Send request to HTTP task to get radio list entries
+		RADIO_MENU_STATE_DISPLAY_LIST, // Show the radio list entries and allow user to pick one
+		RADIO_MENU_STATE_LIST_UPDATING // Waiting for HTTP task to return radio list entries
 	};
 
 	enum widgetPosition

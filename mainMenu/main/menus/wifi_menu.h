@@ -22,11 +22,11 @@ private:
     enum wifiMenuState
     {
         WIFI_MENU_STATE_DEFAULT,
-        WIFI_MENU_STATE_WAITING,
-        WIFI_MENU_STATE_CHOOSE_SSID,
-        WIFI_MENU_STATE_QUERY_PASSWORD,
-        WIFI_MENU_STATE_CONNECTED,
-        WIFI_MENU_STATE_DISCONNECTED
+        WIFI_MENU_STATE_WAITING,        // Waiting for a reply from the low-level Wifi task
+        WIFI_MENU_STATE_CHOOSE_SSID,    // Waiting for the user to choose an SSID from the list
+        WIFI_MENU_STATE_QUERY_PASSWORD, // Waiting for the user to input a password for the chosen SSID
+        WIFI_MENU_STATE_CONNECTED,      // Received reply from low-level Wifi task that we are connected
+        WIFI_MENU_STATE_DISCONNECTED    // Received reply from low-level Wifi task that we are disconnected
     };
 
     enum widgetPosition

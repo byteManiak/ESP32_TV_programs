@@ -17,10 +17,10 @@ private:
 
 	enum newsMenuState
 	{
-		NEWS_MENU_STATE_WAITING_WIFI,
-		NEWS_MENU_STATE_REQUEST_LIST,
-		NEWS_MENU_STATE_DISPLAY_LIST,
-		NEWS_MENU_STATE_LIST_UPDATING
+		NEWS_MENU_STATE_WAITING_WIFI, // Waiting for Wifi to connect
+		NEWS_MENU_STATE_REQUEST_LIST, // Send request to HTTP task to get news headlines
+		NEWS_MENU_STATE_DISPLAY_LIST, // Show the list of news headlines and allow user to scroll through them
+		NEWS_MENU_STATE_LIST_UPDATING // Waiting for HTTP task to return news headlines
 	};
 
 	enum widgetPosition
