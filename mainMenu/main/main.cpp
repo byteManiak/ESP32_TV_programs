@@ -3,22 +3,11 @@
 #include <time.h>
 #include <esp_event.h>
 
-// bitluni includes
-#include <ESP32Lib.h>
-#include <Ressources/CodePage437_8x8.h>
-
 // ESP32-TV-lib includes
-#include <io/ps2.h>
-#include <io/sound.h>
-#include <memory/alloc.h>
-#include <menus/submenus.h>
-#include <stats/stats.h>
-#include <util/numeric.h>
-#include <util/queues.h>
-#include <vga/vga.h>
+#include <ESP32-TV.h>
 #include <ux/menu.h>
-#include <net/wifi.h>
-#include <net/http.h>
+
+#include <menus/submenus.h>
 
 // User app includes
 #include <http/http_handler.h>
@@ -43,7 +32,6 @@ extern "C" void app_main()
 	initSound();
 	initKeyboard();
 
-	esp_event_loop_create_default();
 	initWifi();
 	initHTTP(httpEventHandler);
 
