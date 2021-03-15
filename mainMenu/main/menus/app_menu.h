@@ -38,7 +38,7 @@ private:
 
 	// Establish whether there is a user-downloaded app installed to OTA partition
 	bool hasDownloadedApp = false;
-	char downloadedAppName[32];
+	char downloadedAppName[44];
 
 	bool wifiConnected = false;
 

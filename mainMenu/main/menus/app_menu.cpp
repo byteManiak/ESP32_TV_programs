@@ -38,7 +38,7 @@ AppMenu::AppMenu(VGAExtended *vga, const char *title) : Submenu(vga, title)
 	if (appInfo.magic_word == ESP_APP_DESC_MAGIC_WORD)
 	{
 		hasDownloadedApp = true;
-		strlcpy(downloadedAppName, appInfo.project_name, 32);
+		snprintf(downloadedAppName, 44, "Installed: %s", appInfo.project_name);
 		appList->addElement(strdup(downloadedAppName));
 	}
 
