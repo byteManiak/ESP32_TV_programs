@@ -67,10 +67,10 @@ void WifiMenu::receiveQueueData()
                     ipDetails->setVisible(true);
                     gatewayDetails->setVisible(true);
 
-                    actionButton->setText("Connected!");
+                    actionButton->setText("Connected! Rescan?");
                     actionButton->setFillColor(8);
 
-                    state = WIFI_MENU_STATE_CONNECTED;
+                    state = WIFI_MENU_STATE_DEFAULT;
 
                     sendQueueData(radioQueueTx, RADIO_QUEUE_RX_WIFI_CONNECTED, NULL);
                     sendQueueData(appQueueTx, APP_QUEUE_RX_WIFI_CONNECTED, NULL);
@@ -229,7 +229,6 @@ void WifiMenu::updateSubmenu()
 
         // Nothing for user to do in case of a connection, or waiting for SSIDs
         case WIFI_MENU_STATE_WAITING:
-        case WIFI_MENU_STATE_CONNECTED:
             break;
     }
 }
