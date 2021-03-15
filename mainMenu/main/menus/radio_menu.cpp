@@ -136,16 +136,17 @@ void RadioMenu::updateSubmenu()
 			esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_RADIO_LIST, GET_REQUEST_URL());
 			if (error == ESP_OK)
 			{
-				state = RADIO_MENU_STATE_LIST_UPDATING;
-
 				radioStationList->clear();
 				setFocusedWidget(RADIO_LIST);
 			}
+			state = RADIO_MENU_STATE_DISPLAY_LIST;
 			break;
 		}
 
 		// Wait for a reply from the server before changing the list
 		case RADIO_MENU_STATE_LIST_UPDATING:
+		{
 			break;
+		}
 	}
 }

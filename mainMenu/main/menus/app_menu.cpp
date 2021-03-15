@@ -159,11 +159,6 @@ void AppMenu::updateSubmenu()
 			break;
 		}
 
-		case APP_MENU_STATE_LOAD_INTERNAL:
-		{
-			break;
-		}
-
 		case APP_MENU_STATE_REQUEST_LIST:
 		{
 			if (!wifiConnected)
@@ -188,18 +183,10 @@ void AppMenu::updateSubmenu()
 
 			MAKE_REQUEST_URL("appList=%d,%d", appPageNum*16+start, appPageNum*16+end);
 			esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_APP_LIST, GET_REQUEST_URL());
-			if (error == ESP_OK)
-			{
-				state = APP_MENU_STATE_LIST_UPDATING;
-
-				setFocusedWidget(CONNECTION_STATUS);
-			}
-			else state = APP_MENU_STATE_DEFAULT;
+			if (error == ESP_OK) setFocusedWidget(CONNECTION_STATUS);
+			state = APP_MENU_STATE_DEFAULT;
 			break;
 		}
-
-		case APP_MENU_STATE_LIST_UPDATING:
-			break;
 	}
 }
 

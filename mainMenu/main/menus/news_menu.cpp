@@ -136,12 +136,9 @@ void NewsMenu::updateSubmenu()
 
 				MAKE_REQUEST_URL("news=%d,%d", rssFeedIndex, 0);
 				esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_NEWS_LIST, GET_REQUEST_URL());
-				if (error == ESP_OK)
-				{
-					state = NEWS_MENU_STATE_LIST_UPDATING;
+				if (error == ESP_OK) newsList->clear();
 
-					newsList->clear();
-				}
+				state = NEWS_MENU_STATE_DISPLAY_LIST;
 			}
 
 			break;
