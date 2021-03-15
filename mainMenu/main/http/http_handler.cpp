@@ -3,6 +3,7 @@
 #include <string.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include <esp_ota_ops.h>
 
 #include <io/sound.h>
 #include <memory/alloc.h>
@@ -38,6 +39,9 @@ static void parseURL()
 	if (val2) requestValues[1] = atoi(val2);
 }
 
+static esp_ota_handle_t ota = 0;
+static esp_err_t otaResult = ESP_OK;
+
 esp_err_t httpEventHandler(esp_http_client_event_t *event)
 {
 	switch(event->event_id)
@@ -49,13 +53,24 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 			// Must receive Content-Length header in order to know how much data to read
 			if (!strcmp(event->header_key, "Content-Length"))
 			{
-				contentSize = atoi(event->header_value);
-				// In case the input data is parsed as a string, 
-				// allocate an extra byte to be able to then NUL-terminate it
-				buf = heap_caps_malloc_cast<char>(MALLOC_CAP_PREFERRED, contentSize+1);
-
 				// Parse the URL to tell what request to honor
 				parseURL();
+
+				contentSize = atoi(event->header_value);
+
+				// In case the input data is parsed as a string, 
+				// allocate an extra byte to be able to then NUL-terminate it
+				// Also avoid allocating the buffer when downloading a user app as it may not fit in DRAM
+				if (strcmp(requestType, "app")) buf = heap_caps_malloc_cast<char>(MALLOC_CAP_PREFERRED, contentSize+1);
+
+				// If we are requesting to download an app, prepare the OTA partition
+				if (!strcmp(requestType, "app"))
+				{
+					esp_partition_iterator_t otaPartitionIt = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_OTA_0, NULL);
+					const esp_partition_t *otaPartition = esp_partition_get(otaPartitionIt);
+					if (!otaPartition) otaResult = ESP_ERR_NOT_FOUND;
+					else otaResult = esp_ota_begin(otaPartition, contentSize, &ota);
+				}
 			}
 			break;
 		}
@@ -66,8 +81,17 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 			lastResponse = esp_http_client_get_status_code(httpClient);
 			if (lastResponse == 200 && contentSize > 0 && !esp_http_client_is_chunked_response(event->client))
 			{
-				memcpy(&buf[writtenBytes], event->data, event->data_len);
-				writtenBytes += event->data_len;
+				// If downloading an app, write the OTA data in chunks, not to the HTTP buffer
+				if (!strcmp(requestType, "app") && otaResult == ESP_OK)
+				{
+					LOG_INFO("%d", event->data_len);
+					otaResult = esp_ota_write(ota, event->data, event->data_len);
+				}
+				else
+				{
+					memcpy(&buf[writtenBytes], event->data, event->data_len);
+					writtenBytes += event->data_len;
+				}
 			}
 			break;
 		}
@@ -121,6 +145,7 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 				sendQueueData(appQueueTx, APP_QUEUE_RX_FINISHED_OP, NULL, portMAX_DELAY);
 			}
 
+			// Get list of news headlines
 			else if (!strcmp(requestType, "news"))
 			{
 				char *headline;
@@ -143,6 +168,20 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 
 				// Signal the news menu that no more headlines are being sent
 				sendQueueData(newsQueueTx, NEWS_QUEUE_RX_FINISHED_OP, NULL, portMAX_DELAY);
+			}
+
+			// Load the downloaded app
+			else if (!strcmp(requestType, "app") && otaResult == ESP_OK)
+			{
+				esp_partition_iterator_t otaPartitionIt = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_OTA_0, NULL);
+				const esp_partition_t *otaPartition = esp_partition_get(otaPartitionIt);
+
+				if (otaPartition)
+				{
+					esp_ota_end(ota);
+					esp_ota_set_boot_partition(otaPartition);
+					esp_restart();
+				}
 			}
 
 			break;
