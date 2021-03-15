@@ -91,6 +91,14 @@ void RadioMenu::updateSubmenu()
 			// Get the index of the radio station that was selected
 			int8_t listElementIndex = radioStationList->getStatus();
 
+			// Refresh the list of radio station from the server
+			if (isKeyPressed(F5_key))
+			{
+				radioPageNum = 0;
+				radioPageNumMax = 0xFFFF;
+				state = RADIO_MENU_STATE_REQUEST_LIST;
+			}
+
 			// Get the previous page of stations if PageUp is pressed
 			if (isKeyPressed(PgUp_key) && radioPageNum > 0)
 			{

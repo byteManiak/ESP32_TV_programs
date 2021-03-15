@@ -102,21 +102,33 @@ void AppMenu::updateSubmenu()
 	{
 		case APP_MENU_STATE_DEFAULT:
 		{
+			setFocusedWidget(APP_LIST);
+
 			// Get the index of the radio station that was selected
 			int8_t listElementIndex = appList->getStatus();
 
+			// Refresh the list of apps from the server
+			if (isKeyPressed(F5_key))
+			{
+				appPageNum = 0;
+				appPageNumMax = 0xFFFF;
+				state = APP_MENU_STATE_REQUEST_LIST;
+			}
+
 			// Get the previous page of stations if PageUp is pressed
-			if (isKeyPressed(PgUp_key) && appPageNum > 0)
+			else if (isKeyPressed(PgUp_key) && appPageNum > 0)
 			{
 				appPageNum--;
 				state = APP_MENU_STATE_REQUEST_LIST;
 			}
+
 			// Get the next page (if any) if PageDown is pressed
 			else if (isKeyPressed(PgDown_key) && appPageNum < appPageNumMax)
 			{
 				appPageNum++;
 				state = APP_MENU_STATE_REQUEST_LIST;
 			}
+
 			// If an app is selected (e.g. Enter is pressed), request to download this app
 			else if (listElementIndex > -1 && appList->getSize() > 0)
 			{

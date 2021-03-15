@@ -106,8 +106,16 @@ void NewsMenu::updateSubmenu()
 		{
 			setFocusedWidget(NEWS_LIST);
 
+			// Refresh the list of news headlines from the server
+			if (isKeyPressed(F5_key))
+			{
+				rssFeedPageNum = 0;
+				rssFeedPageNumMax = 0xFFFF;
+				state = NEWS_MENU_STATE_REQUEST_LIST;
+			}
+
 			// Get the previous page of stations if PageUp is pressed
-			if (isKeyPressed(PgUp_key) && rssFeedPageNum > 0)
+			else if (isKeyPressed(PgUp_key) && rssFeedPageNum > 0)
 			{
 				rssFeedPageNum--;
 				state = NEWS_MENU_STATE_REQUEST_LIST;
