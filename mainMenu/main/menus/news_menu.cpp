@@ -32,7 +32,7 @@ void NewsMenu::receiveQueueData()
 				case NEWS_QUEUE_RX_WIFI_CONNECTED:
 				{
 					connectionStatus->setText("WiFi connected");
-					connectionStatus->setFillColor(8);
+					connectionStatus->setFillColor(GREEN);
 
 					state = NEWS_MENU_STATE_REQUEST_LIST;
 					break;
@@ -82,7 +82,7 @@ void NewsMenu::updateSubmenu()
 		case NEWS_MENU_STATE_WAITING_WIFI:
 		{
 			connectionStatus->setText("Waiting for WiFi");
-			connectionStatus->setFillColor(56);
+			connectionStatus->setFillColor(CORNFLOWER);
 			break;
 		}
 

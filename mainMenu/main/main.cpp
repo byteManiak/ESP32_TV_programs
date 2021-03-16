@@ -31,7 +31,7 @@ extern "C" void app_main()
 	// Use IBM BIOS font
 	vga->setFont(CodePage437_8x8);
 
-	menu = heap_caps_malloc_construct<Menu, VGAExtended*>(MALLOC_CAP_PREFERRED, vga);
+	menu = heap_caps_malloc_construct<Menu, VGAExtended*, VGAColor, VGAColor>(MALLOC_CAP_PREFERRED, vga, ORANGE, ACID);
 
 	wifiMenu = heap_caps_malloc_construct<WifiMenu, VGAExtended*, const char*>(MALLOC_CAP_PREFERRED, vga, "Wi-Fi");
 	menu->addSubMenu(wifiMenu);

@@ -34,7 +34,7 @@ void RadioMenu::receiveQueueData()
 				case RADIO_QUEUE_RX_WIFI_CONNECTED:
 				{
 					connectionStatus->setText("WiFi connected");
-					connectionStatus->setFillColor(8);
+					connectionStatus->setFillColor(GREEN);
 
 					state = RADIO_MENU_STATE_REQUEST_LIST;
 					break;
@@ -80,7 +80,7 @@ void RadioMenu::updateSubmenu()
 		case RADIO_MENU_STATE_WAITING_WIFI:
 		{
 			connectionStatus->setText("Waiting for WiFi");
-			connectionStatus->setFillColor(56);
+			connectionStatus->setFillColor(CORNFLOWER);
 			break;
 		}
 

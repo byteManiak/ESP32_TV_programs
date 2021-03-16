@@ -59,7 +59,7 @@ void AppMenu::receiveQueueData()
 				case APP_QUEUE_RX_WIFI_CONNECTED:
 				{
 					connectionStatus->setText("WiFi connected");
-					connectionStatus->setFillColor(8);
+					connectionStatus->setFillColor(GREEN);
 
 					wifiConnected = true;
 					state = APP_MENU_STATE_REQUEST_LIST;
@@ -147,7 +147,7 @@ void AppMenu::updateSubmenu()
 					if (error == ESP_OK)
 					{
 						connectionStatus->setText("Downloading app...");
-						connectionStatus->setFillColor(56);
+						connectionStatus->setFillColor(CORNFLOWER);
 
 						state = APP_MENU_STATE_DOWNLOAD_BIN;
 					}

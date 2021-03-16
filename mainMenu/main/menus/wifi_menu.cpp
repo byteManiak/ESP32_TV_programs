@@ -68,7 +68,7 @@ void WifiMenu::receiveQueueData()
                     gatewayDetails->setVisible(true);
 
                     actionButton->setText("Connected! Rescan?");
-                    actionButton->setFillColor(8);
+                    actionButton->setFillColor(GREEN);
 
                     state = WIFI_MENU_STATE_DEFAULT;
 
@@ -82,7 +82,7 @@ void WifiMenu::receiveQueueData()
                 case WIFI_QUEUE_RX_DISCONNECTED:
                 {
                     actionButton->setText("Connection lost. Rescan?");
-                    actionButton->setFillColor(22);
+                    actionButton->setFillColor(WINE);
 
                     state = WIFI_MENU_STATE_DISCONNECTED;
                     break;
@@ -135,7 +135,7 @@ void WifiMenu::updateSubmenu()
                     ESP_LOGI("menu", "Sent scan event to queue %p", queueTx);
                     // No longer need to scan an SSID
                     state = WIFI_MENU_STATE_WAITING;
-                    actionButton->setFillColor(56);
+                    actionButton->setFillColor(CORNFLOWER);
                     actionButton->setText("Scanning WiFi...");
                 }
             }
@@ -146,7 +146,7 @@ void WifiMenu::updateSubmenu()
         // Wait for user to choose an SSID from the list of available ones
         case WIFI_MENU_STATE_CHOOSE_SSID:
         {
-            actionButton->setFillColor(50);
+            actionButton->setFillColor(PURPLE);
             actionButton->setText("Scan results:");
             // Logic for choosing a SSID for which to enter a password and then connect to
             if (!ssidList->isEmpty())
