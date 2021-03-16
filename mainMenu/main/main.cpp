@@ -1,10 +1,10 @@
 // C and ESP-IDF includes
 #include <stdlib.h>
 #include <time.h>
-#include <esp_event.h>
 
 // ESP32-TV-lib includes
 #include <ESP32-TV.h>
+#include <Ressources/CodePage437_8x8.h>
 #include <ux/menu.h>
 
 #include <menus/submenus.h>
@@ -13,9 +13,6 @@
 #include <http/http_handler.h>
 
 VGAExtended *vga;
-
-// Pins used for driving the VGA signal
-const int r[] = {13, 12}, g[] = {14, 27}, b[] = {33, 32};
 
 Menu *menu;
 WifiMenu *wifiMenu;
@@ -27,20 +24,10 @@ void loop();
 
 extern "C" void app_main()
 {
-	srand(time(NULL));
-
+	initCommon(&vga, 425, 240, 13, 12, 14, 27, 33, 32, 22, 23, 1);
+	initNetwork(httpEventHandler);
 	initSound();
-	initKeyboard();
 
-	initWifi();
-	initHTTP(httpEventHandler);
-
-	vga = heap_caps_malloc_construct<VGAExtended>(MALLOC_CAP_PREFERRED);
-
-	// Initialize VGA display
-	vga->setFrameBufferCount(1);
-	// Set display mode to 425x240
-	vga->init(vga->MODE640x480.custom(425,240), r, g, b, 22, 23);
 	// Use IBM BIOS font
 	vga->setFont(CodePage437_8x8);
 
