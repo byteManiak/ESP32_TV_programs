@@ -21,16 +21,18 @@ AppMenu::AppMenu(VGAExtended *vga, const char *title) : Submenu(vga, title)
 
 	setFocusedWidget(APP_LIST);
 
-	esp_partition_iterator_t appPartition;
+	esp_partition_iterator_t appPartitionIt;
 	esp_app_desc_t appInfo = {};
+	char appName[32] = {0};
 
-	appPartition = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_OTA_0, NULL);
-	if (appPartition)
+	appPartitionIt = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_OTA_0, NULL);
+	if (appPartitionIt)
 	{
-		const esp_partition_t *appPartitionInfo = esp_partition_get(appPartition);
-		if (appPartitionInfo)
+		const esp_partition_t *appPartition = esp_partition_get(appPartitionIt);
+		if (appPartition)
 		{
-			esp_ota_get_partition_description(appPartitionInfo, &appInfo);
+			esp_ota_get_partition_description(appPartition, &appInfo);
+			esp_partition_read(appPartition, 0x120, appName, 32);
 		}
 	}
 
@@ -38,11 +40,11 @@ AppMenu::AppMenu(VGAExtended *vga, const char *title) : Submenu(vga, title)
 	if (appInfo.magic_word == ESP_APP_DESC_MAGIC_WORD)
 	{
 		hasDownloadedApp = true;
-		snprintf(downloadedAppName, 44, "Installed: %s", appInfo.project_name);
+		snprintf(downloadedAppName, 44, "Installed: %s", appName);
 		appList->addElement(strdup(downloadedAppName));
 	}
 
-	esp_partition_iterator_release(appPartition);
+	esp_partition_iterator_release(appPartitionIt);
 }
 
 void AppMenu::receiveQueueData()
