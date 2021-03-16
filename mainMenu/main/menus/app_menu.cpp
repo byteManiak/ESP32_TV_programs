@@ -86,7 +86,7 @@ void AppMenu::receiveQueueData()
 					}
 
 					setFocusedWidget(APP_LIST);
-					state = APP_MENU_STATE_DEFAULT;
+					state = APP_MENU_STATE_DISPLAY_LIST;
 					break;
 				}
 			}
@@ -102,57 +102,67 @@ void AppMenu::updateSubmenu()
 
 	switch(state)
 	{
-		case APP_MENU_STATE_DEFAULT:
+		case APP_MENU_STATE_LIST_UPDATING:
+		case APP_MENU_STATE_DISPLAY_LIST:
 		{
-			setFocusedWidget(APP_LIST);
-
-			// Get the index of the radio station that was selected
-			int8_t listElementIndex = appList->getStatus();
-
-			// Refresh the list of apps from the server
-			if (isKeyPressed(F5_key))
+			if (isActive)
 			{
-				appPageNum = 0;
-				appPageNumMax = 0xFFFF;
-				state = APP_MENU_STATE_REQUEST_LIST;
-			}
+				setFocusedWidget(APP_LIST);
 
-			// Get the previous page of stations if PageUp is pressed
-			else if (isKeyPressed(PgUp_key) && appPageNum > 0)
-			{
-				appPageNum--;
-				state = APP_MENU_STATE_REQUEST_LIST;
-			}
+				// Get the index of the radio station that was selected
+				int8_t listElementIndex = appList->getStatus();
 
-			// Get the next page (if any) if PageDown is pressed
-			else if (isKeyPressed(PgDown_key) && appPageNum < appPageNumMax)
-			{
-				appPageNum++;
-				state = APP_MENU_STATE_REQUEST_LIST;
-			}
-
-			// If an app is selected (e.g. Enter is pressed), request to download this app
-			else if (listElementIndex > -1 && appList->getSize() > 0)
-			{
-				if (hasDownloadedApp && listElementIndex == 0 && appPageNum == 0)
+				// Refresh the list of apps from the server
+				if (isKeyPressed(F5_key))
 				{
-					loadInternalApp();
+					appPageNum = 0;
+					appPageNumMax = 0xFFFF;
+					state = APP_MENU_STATE_REQUEST_LIST;
 				}
-				else
+
+				if (state == APP_MENU_STATE_DISPLAY_LIST)
 				{
-					// Send out get request with the app id
-					MAKE_REQUEST_URL("app=%d", appPageNum*16+listElementIndex-hasDownloadedApp);
-
-					esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_APP, GET_REQUEST_URL());
-					if (error == ESP_OK)
+					// Get the previous page of stations if PageUp is pressed
+					if (isKeyPressed(PgUp_key) && appPageNum > 0)
 					{
-						connectionStatus->setText("Downloading app...");
-						connectionStatus->setFillColor(CORNFLOWER);
+						appPageNum--;
+						state = APP_MENU_STATE_REQUEST_LIST;
+					}
 
-						state = APP_MENU_STATE_DOWNLOAD_BIN;
+					// Get the next page (if any) if PageDown is pressed
+					else if (isKeyPressed(PgDown_key) && appPageNum < appPageNumMax)
+					{
+						appPageNum++;
+						state = APP_MENU_STATE_REQUEST_LIST;
+					}
+
+					// If an app is selected (e.g. Enter is pressed), request to download this app
+					else if (listElementIndex > -1 && appList->getSize() > 0)
+					{
+						if (hasDownloadedApp && listElementIndex == 0 && appPageNum == 0)
+						{
+							loadInternalApp();
+						}
+						else
+						{
+							// Send out get request with the app id
+							MAKE_REQUEST_URL("app=%d", appPageNum*16+listElementIndex-hasDownloadedApp);
+
+							esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_APP, GET_REQUEST_URL());
+							if (error == ESP_OK)
+							{
+								connectionStatus->setText("Downloading app...");
+								connectionStatus->setFillColor(CORNFLOWER);
+
+								state = APP_MENU_STATE_DOWNLOAD_BIN;
+							}
+
+							FREE_REQUEST_URL();
+						}
 					}
 				}
 			}
+
 			break;
 		}
 
@@ -165,7 +175,7 @@ void AppMenu::updateSubmenu()
 		{
 			if (!wifiConnected)
 			{
-				state = APP_MENU_STATE_DEFAULT;
+				state = APP_MENU_STATE_DISPLAY_LIST;
 				return;
 			}
 
@@ -184,9 +194,9 @@ void AppMenu::updateSubmenu()
 			}
 
 			MAKE_REQUEST_URL("appList=%d,%d", appPageNum*16+start, appPageNum*16+end);
-			esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_APP_LIST, GET_REQUEST_URL());
-			if (error == ESP_OK) setFocusedWidget(CONNECTION_STATUS);
-			state = APP_MENU_STATE_DEFAULT;
+			sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_APP_LIST, GET_REQUEST_URL());
+			FREE_REQUEST_URL();
+			state = APP_MENU_STATE_LIST_UPDATING;
 			break;
 		}
 	}

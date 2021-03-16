@@ -70,6 +70,7 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 					const esp_partition_t *otaPartition = esp_partition_get(otaPartitionIt);
 					if (!otaPartition) otaResult = ESP_ERR_NOT_FOUND;
 					else otaResult = esp_ota_begin(otaPartition, contentSize, &ota);
+					esp_partition_iterator_release(otaPartitionIt);
 				}
 			}
 			break;
@@ -98,7 +99,6 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 
 		case HTTP_EVENT_ON_FINISH:
 		{
-			writtenBytes = 0;
 			// NUL-terminate the buffer
 			buf[contentSize] = '\0';
 
@@ -183,6 +183,9 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 					esp_restart();
 				}
 			}
+
+			writtenBytes = 0;
+			heap_caps_free(buf);
 
 			break;
 		}

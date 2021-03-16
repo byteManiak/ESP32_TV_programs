@@ -91,60 +91,61 @@ void NewsMenu::updateSubmenu()
 		{
 			MAKE_REQUEST_URL("news=%d,%d", rssFeedIndex, rssFeedPageNum);
 
-			esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_RADIO_LIST, GET_REQUEST_URL());
+			esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_NEWS_LIST, GET_REQUEST_URL());
 			if (error == ESP_OK)
 			{
-				state = NEWS_MENU_STATE_LIST_UPDATING;
-
 				newsList->clear();
 				setFocusedWidget(NEWS_LIST);
 			}
-			break;
-		}
 
-		case NEWS_MENU_STATE_DISPLAY_LIST:
-		{
-			setFocusedWidget(NEWS_LIST);
-
-			// Refresh the list of news headlines from the server
-			if (isKeyPressed(F5_key))
-			{
-				rssFeedPageNum = 0;
-				rssFeedPageNumMax = 0xFFFF;
-				state = NEWS_MENU_STATE_REQUEST_LIST;
-			}
-
-			// Get the previous page of stations if PageUp is pressed
-			else if (isKeyPressed(PgUp_key) && rssFeedPageNum > 0)
-			{
-				rssFeedPageNum--;
-				state = NEWS_MENU_STATE_REQUEST_LIST;
-			}
-			// Get the next page (if any) if PageDown is pressed
-			else if (isKeyPressed(PgDown_key) && rssFeedPageNum < rssFeedPageNumMax)
-			{
-				rssFeedPageNum++;
-				state = NEWS_MENU_STATE_REQUEST_LIST;
-			}
-			// If a radio station is selected (e.g. Enter is pressed), request to play this station
-			else if (isKeyPressed(Left_key) || isKeyPressed(Right_key))
-			{
-				rssFeedPageNum = 0;
-				rssFeedPageNumMax = 0xFFFF;
-				if (isKeyPressed(Left_key) && rssFeedIndex > 0) rssFeedIndex--;
-				else if(isKeyPressed(Right_key)) rssFeedIndex++;
-
-				MAKE_REQUEST_URL("news=%d,%d", rssFeedIndex, 0);
-				esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_NEWS_LIST, GET_REQUEST_URL());
-				if (error == ESP_OK) newsList->clear();
-
-				state = NEWS_MENU_STATE_DISPLAY_LIST;
-			}
-
+			FREE_REQUEST_URL();
+			state = NEWS_MENU_STATE_LIST_UPDATING;
 			break;
 		}
 
 		case NEWS_MENU_STATE_LIST_UPDATING:
+		case NEWS_MENU_STATE_DISPLAY_LIST:
+		{
+			if (isActive)
+			{
+				setFocusedWidget(NEWS_LIST);
+
+				// Refresh the list of news headlines from the server
+				if (isKeyPressed(F5_key))
+				{
+					rssFeedPageNum = 0;
+					rssFeedPageNumMax = 0xFFFF;
+					state = NEWS_MENU_STATE_REQUEST_LIST;
+				}
+
+				if (state == NEWS_MENU_STATE_DISPLAY_LIST)
+				{
+					// Get the previous page of stations if PageUp is pressed
+					if (isKeyPressed(PgUp_key) && rssFeedPageNum > 0)
+					{
+						rssFeedPageNum--;
+						state = NEWS_MENU_STATE_REQUEST_LIST;
+					}
+					// Get the next page (if any) if PageDown is pressed
+					else if (isKeyPressed(PgDown_key) && rssFeedPageNum < rssFeedPageNumMax)
+					{
+						rssFeedPageNum++;
+						state = NEWS_MENU_STATE_REQUEST_LIST;
+					}
+					// If a radio station is selected (e.g. Enter is pressed), request to play this station
+					else if (isKeyPressed(Left_key) || isKeyPressed(Right_key))
+					{
+						rssFeedPageNum = 0;
+						rssFeedPageNumMax = 0xFFFF;
+						if (isKeyPressed(Left_key) && rssFeedIndex > 0) rssFeedIndex--;
+						else if(isKeyPressed(Right_key)) rssFeedIndex++;
+
+						state = NEWS_MENU_STATE_REQUEST_LIST;
+					}
+				}
+			}
+
 			break;
+		}
 	}
 }

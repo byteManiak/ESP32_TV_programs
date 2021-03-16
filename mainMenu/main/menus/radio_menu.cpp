@@ -84,47 +84,57 @@ void RadioMenu::updateSubmenu()
 			break;
 		}
 
+		case RADIO_MENU_STATE_LIST_UPDATING:
 		case RADIO_MENU_STATE_DISPLAY_LIST:
 		{
-			setFocusedWidget(RADIO_LIST);
-
-			// Get the index of the radio station that was selected
-			int8_t listElementIndex = radioStationList->getStatus();
-
-			// Refresh the list of radio station from the server
-			if (isKeyPressed(F5_key))
+			if (isActive)
 			{
-				radioPageNum = 0;
-				radioPageNumMax = 0xFFFF;
-				state = RADIO_MENU_STATE_REQUEST_LIST;
-			}
+				setFocusedWidget(RADIO_LIST);
 
-			// Get the previous page of stations if PageUp is pressed
-			if (isKeyPressed(PgUp_key) && radioPageNum > 0)
-			{
-				radioPageNum--;
-				state = RADIO_MENU_STATE_REQUEST_LIST;
-			}
-			// Get the next page (if any) if PageDown is pressed
-			else if (isKeyPressed(PgDown_key) && radioPageNum < radioPageNumMax)
-			{
-				radioPageNum++;
-				state = RADIO_MENU_STATE_REQUEST_LIST;
-			}
-			// If a radio station is selected (e.g. Enter is pressed), request to play this station
-			else if (listElementIndex > -1 && radioStationList->getSize() > 0)
-			{
-				// Send out get request with the station id
-				MAKE_REQUEST_URL("station=%d", radioPageNum*16+listElementIndex);
+				// Get the index of the radio station that was selected
+				int8_t listElementIndex = radioStationList->getStatus();
 
-				esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_RADIO_STATION, GET_REQUEST_URL());
-				if (error == ESP_OK)
+				// Refresh the list of radio station from the server
+				if (isKeyPressed(F5_key))
 				{
-					char currentStation[64] = "On air: ";
-					strlcpy(currentStation+8, radioStationList->getElement(), 48);
-					connectionStatus->setText(currentStation);
+					radioPageNum = 0;
+					radioPageNumMax = 0xFFFF;
+					state = RADIO_MENU_STATE_REQUEST_LIST;
+				}
+
+				if (state == RADIO_MENU_STATE_DISPLAY_LIST)
+				{
+					// Get the previous page of stations if PageUp is pressed
+					if (isKeyPressed(PgUp_key) && radioPageNum > 0)
+					{
+						radioPageNum--;
+						state = RADIO_MENU_STATE_REQUEST_LIST;
+					}
+					// Get the next page (if any) if PageDown is pressed
+					else if (isKeyPressed(PgDown_key) && radioPageNum < radioPageNumMax)
+					{
+						radioPageNum++;
+						state = RADIO_MENU_STATE_REQUEST_LIST;
+					}
+					// If a radio station is selected (e.g. Enter is pressed), request to play this station
+					else if (listElementIndex > -1 && radioStationList->getSize() > 0)
+					{
+						// Send out get request with the station id
+						MAKE_REQUEST_URL("station=%d", radioPageNum*16+listElementIndex);
+
+						esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_RADIO_STATION, GET_REQUEST_URL());
+						if (error == ESP_OK)
+						{
+							char currentStation[64] = "On air: ";
+							strlcpy(currentStation+8, radioStationList->getElement(), 48);
+							connectionStatus->setText(currentStation);
+						}
+
+						FREE_REQUEST_URL();
+					}
 				}
 			}
+
 			break;
 		}
 
@@ -139,13 +149,9 @@ void RadioMenu::updateSubmenu()
 				radioStationList->clear();
 				setFocusedWidget(RADIO_LIST);
 			}
-			state = RADIO_MENU_STATE_DISPLAY_LIST;
-			break;
-		}
 
-		// Wait for a reply from the server before changing the list
-		case RADIO_MENU_STATE_LIST_UPDATING:
-		{
+			FREE_REQUEST_URL();
+			state = RADIO_MENU_STATE_LIST_UPDATING;
 			break;
 		}
 	}

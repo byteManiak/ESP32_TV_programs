@@ -17,8 +17,9 @@ private:
 
 	enum appMenuState
 	{
-		APP_MENU_STATE_DEFAULT,
+		APP_MENU_STATE_DISPLAY_LIST,
 		APP_MENU_STATE_REQUEST_LIST,
+		APP_MENU_STATE_LIST_UPDATING,
 		APP_MENU_STATE_DOWNLOAD_BIN
 	};
 
@@ -28,7 +29,7 @@ private:
 		APP_LIST
 	};
 
-	appMenuState state = APP_MENU_STATE_DEFAULT;
+	appMenuState state = APP_MENU_STATE_DISPLAY_LIST;
 
 	void receiveQueueData();
 
