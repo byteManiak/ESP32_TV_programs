@@ -18,7 +18,7 @@ RadioMenu::RadioMenu(VGAExtended *vga, const char *title) : Submenu(vga, title)
 	new (radioStationList) List<char*>(vga, vga->xres/4, vga->yres/8, 18);
 	widgets.push_back(radioStationList);
 
-	setFocusedWidget(CONNECTION_STATUS);
+	setFocusedWidget(RADIO_LIST);
 }
 
 void RadioMenu::receiveQueueData()
@@ -89,8 +89,6 @@ void RadioMenu::updateSubmenu()
 		{
 			if (isActive)
 			{
-				setFocusedWidget(RADIO_LIST);
-
 				// Get the index of the radio station that was selected
 				int8_t listElementIndex = radioStationList->getStatus();
 
@@ -102,7 +100,8 @@ void RadioMenu::updateSubmenu()
 					state = RADIO_MENU_STATE_REQUEST_LIST;
 				}
 
-				if (state == RADIO_MENU_STATE_DISPLAY_LIST)
+				// Prevent requesting a new list when the list is updating
+				if (state != RADIO_MENU_STATE_LIST_UPDATING)
 				{
 					// Get the previous page of stations if PageUp is pressed
 					if (isKeyPressed(PgUp_key) && radioPageNum > 0)
@@ -144,11 +143,7 @@ void RadioMenu::updateSubmenu()
 			MAKE_REQUEST_URL("radio=%d,%d", radioPageNum*16, radioPageNum*16+15);
 
 			esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_RADIO_LIST, GET_REQUEST_URL());
-			if (error == ESP_OK)
-			{
-				radioStationList->clear();
-				setFocusedWidget(RADIO_LIST);
-			}
+			if (error == ESP_OK) radioStationList->clear();
 
 			FREE_REQUEST_URL();
 			state = RADIO_MENU_STATE_LIST_UPDATING;

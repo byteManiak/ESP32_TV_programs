@@ -107,8 +107,6 @@ void AppMenu::updateSubmenu()
 		{
 			if (isActive)
 			{
-				setFocusedWidget(APP_LIST);
-
 				// Get the index of the radio station that was selected
 				int8_t listElementIndex = appList->getStatus();
 
@@ -120,7 +118,8 @@ void AppMenu::updateSubmenu()
 					state = APP_MENU_STATE_REQUEST_LIST;
 				}
 
-				if (state == APP_MENU_STATE_DISPLAY_LIST)
+				// Prevent loading an app or requesting a new list when the list is updating
+				if (state != APP_MENU_STATE_LIST_UPDATING)
 				{
 					// Get the previous page of stations if PageUp is pressed
 					if (isKeyPressed(PgUp_key) && appPageNum > 0)

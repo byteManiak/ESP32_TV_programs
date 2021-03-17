@@ -92,11 +92,7 @@ void NewsMenu::updateSubmenu()
 			MAKE_REQUEST_URL("news=%d,%d", rssFeedIndex, rssFeedPageNum);
 
 			esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_NEWS_LIST, GET_REQUEST_URL());
-			if (error == ESP_OK)
-			{
-				newsList->clear();
-				setFocusedWidget(NEWS_LIST);
-			}
+			if (error == ESP_OK) newsList->clear();
 
 			FREE_REQUEST_URL();
 			state = NEWS_MENU_STATE_LIST_UPDATING;
@@ -108,8 +104,6 @@ void NewsMenu::updateSubmenu()
 		{
 			if (isActive)
 			{
-				setFocusedWidget(NEWS_LIST);
-
 				// Refresh the list of news headlines from the server
 				if (isKeyPressed(F5_key))
 				{
@@ -118,7 +112,8 @@ void NewsMenu::updateSubmenu()
 					state = NEWS_MENU_STATE_REQUEST_LIST;
 				}
 
-				if (state == NEWS_MENU_STATE_DISPLAY_LIST)
+				// Prevent requesting a new list when the list is updating
+				if (state != NEWS_MENU_STATE_LIST_UPDATING)
 				{
 					// Get the previous page of stations if PageUp is pressed
 					if (isKeyPressed(PgUp_key) && rssFeedPageNum > 0)
