@@ -6,8 +6,7 @@
 
 RadioMenu::RadioMenu(VGAExtended *vga, const char *title) : Submenu(vga, title)
 {
-	// The radio menu sends out requests to the HTTP client
-	// and receives replies through the radio TX queue
+	radioQueueTx = xQueueCreate(16, sizeof(queue_message*));
 	attachQueues(httpQueueRx, radioQueueTx);
 
 	connectionStatus = heap_caps_malloc_cast<Button>(MALLOC_CAP_PREFERRED);

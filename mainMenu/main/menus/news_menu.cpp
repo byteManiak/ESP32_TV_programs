@@ -9,6 +9,7 @@ static const char *TAG = "newsMenu";
 
 NewsMenu::NewsMenu(VGAExtended *vga, const char *title) : Submenu(vga, title)
 {
+	newsQueueTx = xQueueCreate(16, sizeof(queue_message*));
 	attachQueues(httpQueueRx, newsQueueTx);
 
 	connectionStatus = heap_caps_malloc_cast<Button>(MALLOC_CAP_PREFERRED);
