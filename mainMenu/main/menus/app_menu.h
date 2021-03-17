@@ -4,6 +4,7 @@
 
 #include <widget/button.h>
 #include <widget/list.h>
+#include <widget/progressbar.h>
 
 class AppMenu : public Submenu
 {
@@ -14,6 +15,7 @@ public:
 private:
 	Button *connectionStatus;
 	List<char*> *appList;
+	ProgressBar *progressBar;
 
 	enum appMenuState
 	{

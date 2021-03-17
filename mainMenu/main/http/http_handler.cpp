@@ -91,8 +91,14 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 				// If downloading an app, write the OTA data in chunks, not to the HTTP buffer
 				if (!strcmp(requestType, "app") && otaResult == ESP_OK)
 				{
-					LOG_INFO("%d", event->data_len);
 					otaResult = esp_ota_write(ota, event->data, event->data_len);
+					writtenBytes += event->data_len;
+					if (contentSize > 0 )
+					{
+						char percentage[5] = {0};
+						snprintf(percentage, 5, "%.2f", writtenBytes/double(contentSize));
+						sendQueueData(appQueueTx, APP_QUEUE_RX_DOWNLOAD_PERCENT, percentage, portMAX_DELAY);
+					}
 				}
 				else
 				{

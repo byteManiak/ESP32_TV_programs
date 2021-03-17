@@ -24,9 +24,10 @@ extern QueueHandle_t appQueueTx;
 
 // Queue flags to be used with the app queues
 enum app_queue_rx_flag {
-    APP_QUEUE_RX_WIFI_CONNECTED, // Signal the app menu that wifi is connected
-    APP_QUEUE_RX_APP_NAME,       // Signal the app menu that an application was sent to the list
-    APP_QUEUE_RX_FINISHED_OP // Signal the app menu that the server finished sending the list of application
+    APP_QUEUE_RX_WIFI_CONNECTED,   // Signal the app menu that wifi is connected
+    APP_QUEUE_RX_APP_NAME,         // Signal the app menu that an application was sent to the list
+    APP_QUEUE_RX_DOWNLOAD_PERCENT, // Signal the app menu the progress of the app download
+    APP_QUEUE_RX_FINISHED_OP       // Signal the app menu that the server finished sending the list of application
 };
 
 extern QueueHandle_t newsQueueTx;

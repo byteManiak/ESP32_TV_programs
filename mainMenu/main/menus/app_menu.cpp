@@ -22,6 +22,11 @@ AppMenu::AppMenu(VGAExtended *vga, const char *title) : Submenu(vga, title)
 	new (appList) List<char*>(vga, vga->xres/4, vga->yres/8, 8);
 	widgets.push_back(appList);
 
+	progressBar = heap_caps_malloc_cast<ProgressBar>(MALLOC_CAP_PREFERRED);
+	new (progressBar) ProgressBar(vga);
+	progressBar->setVisible(false);
+	widgets.push_back(progressBar);
+
 	setFocusedWidget(APP_LIST);
 
 	esp_partition_iterator_t appPartitionIt;
@@ -74,6 +79,13 @@ void AppMenu::receiveQueueData()
 					char *appName = heap_caps_malloc_cast<char>(MALLOC_CAP_DEFAULT, 256);
 					strlcpy(appName, rxMessage->msg_text, 256);
 					appList->addElement(appName);
+					break;
+				}
+
+				case APP_QUEUE_RX_DOWNLOAD_PERCENT:
+				{
+					progressBar->setVisible(true);
+					progressBar->setPercentage(atof(rxMessage->msg_text));
 					break;
 				}
 
@@ -172,6 +184,7 @@ void AppMenu::updateSubmenu()
 
 		case APP_MENU_STATE_DOWNLOAD_BIN:
 		{
+			progressBar->setFocused(true);
 			break;
 		}
 
