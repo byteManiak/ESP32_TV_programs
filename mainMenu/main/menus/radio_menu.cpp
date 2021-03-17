@@ -122,7 +122,7 @@ void RadioMenu::updateSubmenu()
 						// Send out get request with the station id
 						MAKE_REQUEST_URL("station=%d", radioPageNum*16+listElementIndex);
 
-						esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_RADIO_STATION, GET_REQUEST_URL());
+						esp_err_t error = sendQueueData(queueTx, 0, GET_REQUEST_URL());
 						if (error == ESP_OK)
 						{
 							char currentStation[64] = "On air: ";
@@ -143,7 +143,7 @@ void RadioMenu::updateSubmenu()
 		{
 			MAKE_REQUEST_URL("radio=%d,%d", radioPageNum*16, radioPageNum*16+15);
 
-			esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_RADIO_LIST, GET_REQUEST_URL());
+			esp_err_t error = sendQueueData(queueTx, 0, GET_REQUEST_URL());
 			if (error == ESP_OK) radioStationList->clear();
 
 			FREE_REQUEST_URL();

@@ -152,7 +152,7 @@ void AppMenu::updateSubmenu()
 							// Send out get request with the app id
 							MAKE_REQUEST_URL("app=%d", appPageNum*16+listElementIndex-hasDownloadedApp);
 
-							esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_APP, GET_REQUEST_URL());
+							esp_err_t error = sendQueueData(queueTx, 0, GET_REQUEST_URL());
 							if (error == ESP_OK)
 							{
 								connectionStatus->setText("Downloading app...");
@@ -198,7 +198,7 @@ void AppMenu::updateSubmenu()
 			}
 
 			MAKE_REQUEST_URL("appList=%d,%d", appPageNum*16+start, appPageNum*16+end);
-			sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_APP_LIST, GET_REQUEST_URL());
+			sendQueueData(queueTx, 0, GET_REQUEST_URL());
 			FREE_REQUEST_URL();
 			state = APP_MENU_STATE_LIST_UPDATING;
 			break;

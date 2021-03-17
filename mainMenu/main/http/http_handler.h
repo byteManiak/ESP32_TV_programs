@@ -11,15 +11,6 @@
  */
 esp_err_t httpEventHandler(esp_http_client_event_t *event);
 
-// Queue flags to be used by any user-defined HTTP clients
-enum http_queue_tx_flag {
-	HTTP_QUEUE_TX_REQUEST_RADIO_LIST,    // Signal the HTTP task to return the list of radio stations
-	HTTP_QUEUE_TX_REQUEST_RADIO_STATION, // Signal the HTTP task to return the URL of the selected radio station
-    HTTP_QUEUE_TX_REQUEST_APP_LIST,      // Signal the HTTP task to return the list of user-downloadable applications
-    HTTP_QUEUE_TX_REQUEST_APP,           // Signal the HTTP task to download the selected application
-    HTTP_QUEUE_TX_REQUEST_NEWS_LIST      // Signal the HTTP task to return the list of news headlines from the current RSS feed
-};
-
 extern QueueHandle_t radioQueueTx;
 
 // Queue flags to be used with the radio queues

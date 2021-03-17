@@ -94,7 +94,7 @@ void NewsMenu::updateSubmenu()
 		{
 			MAKE_REQUEST_URL("news=%d,%d", rssFeedIndex, rssFeedPageNum);
 
-			esp_err_t error = sendQueueData(queueTx, HTTP_QUEUE_TX_REQUEST_NEWS_LIST, GET_REQUEST_URL());
+			esp_err_t error = sendQueueData(queueTx, 0, GET_REQUEST_URL());
 			if (error == ESP_OK) newsList->clear();
 
 			FREE_REQUEST_URL();
