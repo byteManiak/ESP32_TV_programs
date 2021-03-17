@@ -89,6 +89,8 @@ void RadioMenu::updateSubmenu()
 		{
 			if (isActive)
 			{
+				setFocusedWidget(RADIO_LIST);
+
 				// Get the index of the radio station that was selected
 				int8_t listElementIndex = radioStationList->getStatus();
 

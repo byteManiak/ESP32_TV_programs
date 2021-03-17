@@ -1,9 +1,11 @@
 #include <menus/app_menu.h>
 
+#include <esp_ota_ops.h>
+
 #include <util/log.h>
 #include <net/http.h>
 
-#include <esp_ota_ops.h>
+#include <http/http_handler.h>
 
 static const char *TAG = "appMenu";
 
@@ -107,6 +109,8 @@ void AppMenu::updateSubmenu()
 		{
 			if (isActive)
 			{
+				setFocusedWidget(APP_LIST);
+
 				// Get the index of the radio station that was selected
 				int8_t listElementIndex = appList->getStatus();
 

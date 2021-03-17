@@ -8,6 +8,8 @@
 #include <util/numeric.h>
 #include <util/queues.h>
 
+#include <http/http_handler.h>
+
 WifiMenu::WifiMenu(VGAExtended *vga, const char *title) : Submenu(vga, title)
 {
     attachQueues(wifiQueueRx, wifiQueueTx);

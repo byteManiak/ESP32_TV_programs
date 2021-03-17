@@ -3,6 +3,8 @@
 #include <util/log.h>
 #include <net/http.h>
 
+#include <http/http_handler.h>
+
 static const char *TAG = "newsMenu";
 
 NewsMenu::NewsMenu(VGAExtended *vga, const char *title) : Submenu(vga, title)
@@ -104,6 +106,8 @@ void NewsMenu::updateSubmenu()
 		{
 			if (isActive)
 			{
+				setFocusedWidget(NEWS_LIST);
+
 				// Refresh the list of news headlines from the server
 				if (isKeyPressed(F5_key))
 				{
