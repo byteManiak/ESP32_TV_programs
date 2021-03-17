@@ -70,7 +70,7 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 				if (strcmp(requestType, "app")) buf = heap_caps_malloc_cast<char>(MALLOC_CAP_PREFERRED, contentSize+1);
 
 				// If we are requesting to download an app, prepare the OTA partition
-				if (!strcmp(requestType, "app"))
+				else
 				{
 					esp_partition_iterator_t otaPartitionIt = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_OTA_0, NULL);
 					const esp_partition_t *otaPartition = esp_partition_get(otaPartitionIt);
