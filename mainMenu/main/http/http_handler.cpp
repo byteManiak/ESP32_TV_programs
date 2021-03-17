@@ -22,6 +22,12 @@ static char url[256] = {};
 static char requestType[16] = {};
 static int requestValues[2];
 
+QueueHandle_t appQueueTx = NULL;
+
+QueueHandle_t radioQueueTx = NULL;
+
+QueueHandle_t newsQueueTx = NULL;
+
 static void parseURL()
 {
 	// Get URL that contains the client request
