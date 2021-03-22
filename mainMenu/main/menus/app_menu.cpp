@@ -101,6 +101,7 @@ void AppMenu::receiveQueueData()
 					}
 
 					connectionStatus->setFillColor(GREEN);
+					connectionStatus->setText("Connected to server");
 					setFocusedWidget(APP_LIST);
 					state = APP_MENU_STATE_DISPLAY_LIST;
 					break;

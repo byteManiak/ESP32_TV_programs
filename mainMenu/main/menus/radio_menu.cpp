@@ -62,6 +62,7 @@ void RadioMenu::receiveQueueData()
 					}
 
 					connectionStatus->setFillColor(GREEN);
+					connectionStatus->setText("Connected to server");
 					state = RADIO_MENU_STATE_DISPLAY_LIST;
 					break;
 				}
