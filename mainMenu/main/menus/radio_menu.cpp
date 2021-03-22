@@ -45,6 +45,7 @@ void RadioMenu::receiveQueueData()
 					char *radioStation = heap_caps_malloc_cast<char>(MALLOC_CAP_DEFAULT, 256);
 					strlcpy(radioStation, rxMessage->msg_text, 256);
 					radioStationList->addElement(radioStation);
+
 					break;
 				}
 
@@ -59,7 +60,16 @@ void RadioMenu::receiveQueueData()
 							radioPageNumMax = radioPageNum-1;
 						else radioPageNumMax = radioPageNum;
 					}
+
+					connectionStatus->setFillColor(GREEN);
 					state = RADIO_MENU_STATE_DISPLAY_LIST;
+					break;
+				}
+
+				case RADIO_QUEUE_RX_HTTP_SERVER_ERROR:
+				{
+					connectionStatus->setText("Server not responding");
+					connectionStatus->setFillColor(RED);
 					break;
 				}
 			}

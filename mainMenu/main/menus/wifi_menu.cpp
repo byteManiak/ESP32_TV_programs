@@ -109,6 +109,14 @@ void WifiMenu::receiveQueueData()
                     gatewayDetails->setText(gatewayText);
                     break;
                 }
+
+                case WIFI_QUEUE_RX_HTTP_SERVER_ERROR:
+                {
+                    sendQueueData(appQueueTx, APP_QUEUE_RX_HTTP_SERVER_ERROR, NULL, portMAX_DELAY);
+                    sendQueueData(newsQueueTx, NEWS_QUEUE_RX_HTTP_SERVER_ERROR, NULL, portMAX_DELAY);
+                    sendQueueData(radioQueueTx, RADIO_QUEUE_RX_HTTP_SERVER_ERROR, NULL, portMAX_DELAY);
+                    break;
+                }
             }
             heap_caps_free(rxMessage);
         }

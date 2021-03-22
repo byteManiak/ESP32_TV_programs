@@ -44,6 +44,7 @@ void NewsMenu::receiveQueueData()
 				case NEWS_QUEUE_RX_RSS_FEED_NAME:
 				{
 					connectionStatus->setText(rxMessage->msg_text);
+
 					break;
 				}
 
@@ -52,6 +53,7 @@ void NewsMenu::receiveQueueData()
 					char *newsHeadline = heap_caps_malloc_cast<char>(MALLOC_CAP_DEFAULT, 256);
 					strlcpy(newsHeadline, rxMessage->msg_text, 256);
 					newsList->addElement(newsHeadline);
+
 					break;
 				}
 
@@ -65,7 +67,16 @@ void NewsMenu::receiveQueueData()
 							rssFeedPageNumMax = rssFeedPageNum-1;
 						else rssFeedPageNumMax = rssFeedPageNum;
 					}
+
+					connectionStatus->setFillColor(GREEN);
 					state = NEWS_MENU_STATE_DISPLAY_LIST;
+					break;
+				}
+
+				case NEWS_QUEUE_RX_HTTP_SERVER_ERROR:
+				{
+					connectionStatus->setText("Server not responding");
+					connectionStatus->setFillColor(RED);
 					break;
 				}
 			}

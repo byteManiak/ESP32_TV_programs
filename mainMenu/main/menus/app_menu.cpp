@@ -100,8 +100,16 @@ void AppMenu::receiveQueueData()
 						else appPageNumMax = appPageNum;
 					}
 
+					connectionStatus->setFillColor(GREEN);
 					setFocusedWidget(APP_LIST);
 					state = APP_MENU_STATE_DISPLAY_LIST;
+					break;
+				}
+
+				case APP_QUEUE_RX_HTTP_SERVER_ERROR:
+				{
+					connectionStatus->setText("Server not responding");
+					connectionStatus->setFillColor(RED);
 					break;
 				}
 			}
