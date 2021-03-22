@@ -172,7 +172,7 @@ void WifiMenu::updateSubmenu()
                         state = WIFI_MENU_STATE_QUERY_PASSWORD;
 
                         passwordTextbox = (Textbox*)heap_caps_malloc(sizeof(Textbox), MALLOC_CAP_PREFERRED);
-                        new (passwordTextbox) Textbox(vga, true);
+                        new (passwordTextbox) Textbox(vga, "Insert password:", true);
                         widgets.push_back(passwordTextbox);
 
                         setFocusedWidget(PASSWORD_TEXTBOX);
