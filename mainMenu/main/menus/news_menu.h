@@ -8,8 +8,8 @@
 class NewsMenu : public Submenu
 {
 public:
-    NewsMenu(VGAExtended *vga, const char *title);
-    void updateSubmenu();
+	NewsMenu(VGAExtended *vga, const char *title);
+	void updateSubmenu();
 
 private:
 	Button *connectionStatus;

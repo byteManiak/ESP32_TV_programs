@@ -9,8 +9,8 @@
 class AppMenu : public Submenu
 {
 public:
-    AppMenu(VGAExtended *vga, const char *title);
-    void updateSubmenu();
+	AppMenu(VGAExtended *vga, const char *title);
+	void updateSubmenu();
 
 private:
 	Button *connectionStatus;

@@ -58,7 +58,7 @@ void loop()
 	calculateTimeDelta();
 
 	// Get PS/2 keyboard state
-    updateKeyboard();
+	updateKeyboard();
 
 	menu->drawMenu();
 

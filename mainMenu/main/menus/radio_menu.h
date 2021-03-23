@@ -8,8 +8,8 @@
 class RadioMenu : public Submenu
 {
 public:
-    RadioMenu(VGAExtended *vga, const char *title);
-    void updateSubmenu();
+	RadioMenu(VGAExtended *vga, const char *title);
+	void updateSubmenu();
 
 private:
 	List<char*> *radioStationList;
