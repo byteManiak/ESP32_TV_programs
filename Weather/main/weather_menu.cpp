@@ -40,6 +40,15 @@ void WeatherMenu::receiveQueueData()
 
 					break;
 				}
+
+				case WIFI_QUEUE_RX_HTTP_SERVER_ERROR:
+				{
+					state = WEATHER_APP_STATE_GET_LOCATION;
+					connectionStatus->setText("Server not responding. Try again.");
+					connectionStatus->setFillColor(WINE2);
+
+					break;
+				}
 			}
 
 			heap_caps_free(rxMessage);
@@ -56,7 +65,7 @@ void WeatherMenu::receiveQueueData()
 				case WEATHER_QUEUE_RX_FORECAST:
 				{
 					Forecast *currentForecast = heap_caps_malloc_cast<Forecast>(MALLOC_CAP_PREFERRED);
-					
+
 					char *dateStr = strtok(rxMessage->msg_text, " ");
 					char *hourStr = strtok(NULL, " ");
 					char *tempStr = strtok(NULL, " ");
@@ -81,21 +90,32 @@ void WeatherMenu::receiveQueueData()
 				{
 					for(auto &day : days) day = NULL;
 
-					days[0] = forecasts[0]->date;
-					int currentDay = 0;
-
-					for(auto i : forecasts)
+					if (forecasts.size() > 0)
 					{
-						if (strcmp(i->date, days[currentDay]))
+						days[0] = forecasts[0]->date;
+						int currentDay = 0;
+
+						for(auto i : forecasts)
 						{
-							currentDay++;
-							days[currentDay] = i->date;
+							if (strcmp(i->date, days[currentDay]))
+							{
+								currentDay++;
+								days[currentDay] = i->date;
+							}
 						}
+
+						forecastValid = true;
+
+						state = WEATHER_APP_STATE_SHOW_WEATHER;
+					}
+					else
+					{
+						connectionStatus->setText("Invalid location entered");
+						connectionStatus->setFillColor(WINE2);
+
+						state = WEATHER_APP_STATE_GET_LOCATION;
 					}
 
-					forecastValid = true;
-
-					state = WEATHER_APP_STATE_SHOW_WEATHER;
 					break;
 				}
 			}
@@ -168,6 +188,8 @@ void WeatherMenu::updateSubmenu()
 			if (isKeyPressed(Left_key)) hoveredDay = getPrevInt(hoveredDay, 6);
 			if (isKeyPressed(Right_key)) hoveredDay = getNextInt(hoveredDay, 6);
 
+			bool buttonPressed = connectionStatus->getStatus();
+			if (buttonPressed) state = WEATHER_APP_STATE_GET_LOCATION;
 			break;
 		}
 
