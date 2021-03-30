@@ -44,7 +44,5 @@ void loop()
 
 	vga->showDrawables();
 
-	if (isKeyPressed(Enter_key)) closeApp();
-
 	vTaskDelay(10 / portTICK_PERIOD_MS);
 }
