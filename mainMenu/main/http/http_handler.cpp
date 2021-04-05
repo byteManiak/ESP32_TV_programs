@@ -111,8 +111,8 @@ esp_err_t httpEventHandler(esp_http_client_event_t *event)
 
 		case HTTP_EVENT_ON_FINISH:
 		{
-			// NUL-terminate the buffer
-			buf[contentSize] = '\0';
+			// NUL-terminate the buffer when not downloading an app
+			if (strcmp(requestType, "app")) buf[contentSize] = '\0';
 
 			// Get list of radio stations
 			if (!strcmp(requestType, "radio"))
