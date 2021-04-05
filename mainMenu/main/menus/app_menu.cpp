@@ -111,6 +111,7 @@ void AppMenu::receiveQueueData()
 				{
 					connectionStatus->setText("Server not responding");
 					connectionStatus->setFillColor(RED);
+					state = APP_MENU_STATE_DISPLAY_LIST;
 					break;
 				}
 			}

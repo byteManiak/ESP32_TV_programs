@@ -16,7 +16,7 @@ WifiMenu::WifiMenu(VGAExtended *vga, const char *title) : Submenu(vga, title)
 
 	actionButton = heap_caps_malloc_cast<Button>(MALLOC_CAP_PREFERRED);
 	new (actionButton) Button(vga, "Begin WiFi scan", vga->xres/2 + vga->xres/16, vga->yres/6);
-	actionButton->setFillColor(56);
+	actionButton->setFillColor(CORNFLOWER);
 	widgets.push_back(actionButton);
 
 	ssidList = heap_caps_malloc_cast<List<char*>>(MALLOC_CAP_PREFERRED);
