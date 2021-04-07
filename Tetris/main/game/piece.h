@@ -55,7 +55,7 @@ public:
 	void moveDown()
 	{
 		yPos++;
-		if (isColliding()) { placeDown(); }
+		if (isColliding() && state != PLACED) { placeDown(); }
 	}
 
 	virtual void draw() = 0;
