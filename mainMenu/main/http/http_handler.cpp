@@ -1,3 +1,7 @@
+/*
+	Author: Mihai Daniel Ivanescu, Coventry University
+ */
+
 #include <http/http_handler.h>
 
 #include <string.h>

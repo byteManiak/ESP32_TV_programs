@@ -1,3 +1,7 @@
+/*
+	Author: Mihai Daniel Ivanescu, Coventry University
+ */
+
 // C and ESP-IDF includes
 #include <stdlib.h>
 #include <time.h>

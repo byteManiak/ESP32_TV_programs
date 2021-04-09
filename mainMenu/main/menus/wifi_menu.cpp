@@ -1,3 +1,7 @@
+/*
+	Author: Mihai Daniel Ivanescu, Coventry University
+ */
+
 #include <menus/wifi_menu.h>
 
 #include <string.h>

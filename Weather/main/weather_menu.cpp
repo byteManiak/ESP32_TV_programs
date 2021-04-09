@@ -1,3 +1,7 @@
+/*
+	Author: Mihai Daniel Ivanescu, Coventry University
+ */
+
 #include <weather_menu.h>
 
 #include <net/http.h>

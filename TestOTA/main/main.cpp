@@ -1,3 +1,7 @@
+/*
+	Author: Mihai Daniel Ivanescu, Coventry University
+ */
+
 #include <esp_ota_ops.h>
 
 #include <freertos/FreeRTOS.h>

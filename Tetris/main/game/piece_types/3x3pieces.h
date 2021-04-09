@@ -1,6 +1,5 @@
 /*
 	Author: Mihai Daniel Ivanescu, Coventry University
-	License: BSD License
  */
 
 #pragma once

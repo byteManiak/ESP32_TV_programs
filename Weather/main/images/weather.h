@@ -1,3 +1,7 @@
+/*
+	Author: Mihai Daniel Ivanescu, Coventry University
+ */
+
 const int weatherOffsets[] = {0, 1024, 2048, 3072, 4096, 5120, 6144, 7168, };
 const short weatherPointOffsets[] = {0, 1, 2, 3, 4, 5, 6, 7, };
 const unsigned short weatherRes[][2] = {{32, 32}, {32, 32}, {32, 32}, {32, 32}, {32, 32}, {32, 32}, {32, 32}, };

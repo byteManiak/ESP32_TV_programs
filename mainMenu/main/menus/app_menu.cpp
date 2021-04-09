@@ -1,3 +1,7 @@
+/*
+	Author: Mihai Daniel Ivanescu, Coventry University
+ */
+
 #include <menus/app_menu.h>
 
 #include <esp_ota_ops.h>
