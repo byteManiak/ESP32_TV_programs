@@ -12,6 +12,8 @@ enum PauseReturn
 	PAUSE_QUIT
 };
 
+bool musicMuted = false;
+
 #define PAUSEY 42
 
 class PauseMenu
@@ -82,7 +84,6 @@ public:
 private:
 	int menuCursor = 0;
 	bool soundMuted = false;
-	bool musicMuted = false;
 };
 
 class ProgressGem
